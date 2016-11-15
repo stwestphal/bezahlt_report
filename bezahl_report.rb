@@ -1,6 +1,22 @@
 require 'csv'
 require 'pry'
 
+class Kunde
+
+  def initialize(name, bezahlt)
+
+    @name = name
+    if bezahlt >0
+      @bezahlt=bezahlt
+    else
+      @nichtbezahlt=1
+    end
+
+    @summe=bezahlt
+
+  end
+
+  
 # Klasse in Ruby
 class Report
 
