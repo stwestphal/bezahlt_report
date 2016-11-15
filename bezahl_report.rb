@@ -19,7 +19,7 @@ class Report
 
 
     CSV.foreach(@file,:headers=>false) do |row|
-      #print row[1..2]
+       #print row[1..2]
 
       kunde = row[one]
       bezahl = row[two].to_i
