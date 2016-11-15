@@ -15,8 +15,8 @@ class Kunde
     @summe=bezahlt
 
   end
+end
 
-  
 # Klasse in Ruby
 class Report
 
