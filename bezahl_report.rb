@@ -15,6 +15,26 @@ class Kunde
     @summe=bezahlt
 
   end
+
+  def set_name(name)
+    @name = name
+  end
+
+  def get_name()
+    @name
+  end
+
+  def set_summe(summe)
+    @summe = summe
+  end
+
+  def get_summe()
+    @summe
+  end
+
+  def add_summe(summe)
+    @summe += summe
+  end
 end
 
 # Klasse in Ruby
@@ -40,16 +60,22 @@ class Report
       kunde = row[one]
       bezahl = row[two].to_i
 
+      ausgabeHash[kunde] = Kunde.new(kunde,0) if ausgabeHash[kunde].nil?   #if not set: init with 0
 
-      ausgabeHash[kunde] = 0 if ausgabeHash[kunde].nil?
-      ausgabeHash[kunde] += bezahl
+
+      #ausgabeHash[kunde] = 0 if ausgabeHash[kunde].nil?   #if not set: init with 0
+
+      #ausgabeHash[kunde] += bezahl
+      ausgabeHash[kunde]
 
       @sum+= bezahl
 
     end
 
+
     @report=ausgabeHash.drop(1)
     #ausgabe(ausgabeHash.drop(1),@sum)
+    p ausgabeHash
 
   end
 
