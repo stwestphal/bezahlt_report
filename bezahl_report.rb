@@ -2,40 +2,30 @@ require 'csv'
 require 'pry'
 
 class Kunde
+  attr_accessor :summe, :name    #ruby statt setter und getters (attr_accessor fasst attr_reader und attr_writer zusammen)
 
   def initialize(name, bezahlt)
 
     @name = name
     if bezahlt >0
-      @bezahlt=bezahlt
+      @bezahlt=0
     else
-      @nichtbezahlt=1
+      @nichtbezahlt=0
     end
 
     @summe=bezahlt
 
   end
 
-  def set_name(name)
-    @name = name
-  end
 
-  def get_name()
-    @name
-  end
-
-  def set_summe(summe)
+  def summe=(summe)
     @summe = summe
-  end
-
-  def get_summe()
-    @summe
-  end
-
-  def add_summe(summe)
-    @summe += summe
+    if summe==0
+      @nichtbezahlt+=1
+    end
   end
 end
+
 
 # Klasse in Ruby
 class Report
@@ -49,7 +39,7 @@ class Report
 
   def generiere_bezahlReport(one, two)
 
-    @sum=0
+    @gesamtsum=0
 
     ausgabeHash = {}
 
@@ -66,9 +56,10 @@ class Report
       #ausgabeHash[kunde] = 0 if ausgabeHash[kunde].nil?   #if not set: init with 0
 
       #ausgabeHash[kunde] += bezahl
-      ausgabeHash[kunde]
 
-      @sum+= bezahl
+      ausgabeHash[kunde].summe += bezahl  #wir speichern unsere daten nun in der klasse 'kunde' in instanz-variablen
+
+      @gesamtsum+= bezahl
 
     end
 
@@ -83,18 +74,18 @@ class Report
   def ausgabe(tabsigns)
 
     printf "%-#{tabsigns}s %s\n","Kunde","Bezahlt\n"
-#p @report
+      #p @report
 
     @report.sort do |a, b|
       a.last == b.last ? a.first <=> b.first :
       b.last <=> a.last
     end.each do |key, value|
 
-    printf("%-#{tabsigns}s %s\n",key, value)
+      printf("%-#{tabsigns}s %s\n",key, value)
     end
 
     printf("\n")
-    printf("%-#{tabsigns}s %s\n","Gesamt Summe", @sum)
+    printf("%-#{tabsigns}s %s\n","Gesamt Summe", @gesamtsum)
     print"\n"
   end
 
@@ -104,4 +95,4 @@ end
 report = Report.new()
 report.lade_CSV()
 report.generiere_bezahlReport(1,2)
-report.ausgabe(40)
+#report.ausgabe(40)
