@@ -2,97 +2,96 @@ require 'csv'
 require 'pry'
 
 class Kunde
-  attr_accessor :summe, :name    #ruby statt setter und getters (attr_accessor fasst attr_reader und attr_writer zusammen)
+  attr_accessor :summe, :name, :bezahlt, :nichtbezahlt   #ruby statt setter und getters (attr_accessor fasst attr_reader und attr_writer zusammen)
 
-  def initialize(name, bezahlt)
+  def initialize(name)
 
     @name = name
-    if bezahlt >0
+
       @bezahlt=0
-    else
       @nichtbezahlt=0
-    end
 
-    @summe=bezahlt
-
+    @summe=0
   end
 
 
   def summe=(summe)
+
     @summe = summe
+
     if summe==0
       @nichtbezahlt+=1
+    else
+      @bezahlt+=1
     end
   end
+
 end
 
 
 # Klasse in Ruby
 class Report
 
-  def lade_CSV(file="./usage-data-2016-11-15.csv")
+  @report={}
 
-    @file = file
-    #puts @file
+  def lade_CSV(file)
+
+    file
   end
 
 
-  def generiere_bezahlReport(one, two)
+  def generiere_bezahlReport(file, name_colum, price_colum)
 
     @gesamtsum=0
-
     ausgabeHash = {}
 
 
-    CSV.foreach(@file,:headers=>false) do |row|
+    CSV.foreach(file,:headers=>false) do |row|
        #print row[1..2]
 
-      kunde = row[one]
-      bezahl = row[two].to_i
+      kunden_name = row[name_colum]
+      bezahl = row[price_colum].to_i
 
-      ausgabeHash[kunde] = Kunde.new(kunde,0) if ausgabeHash[kunde].nil?   #if not set: init with 0
+      ausgabeHash[kunden_name] = Kunde.new(kunden_name) if ausgabeHash[kunden_name].nil?   #if not set: init with 0
 
-
-      #ausgabeHash[kunde] = 0 if ausgabeHash[kunde].nil?   #if not set: init with 0
-
-      #ausgabeHash[kunde] += bezahl
-
-      ausgabeHash[kunde].summe += bezahl  #wir speichern unsere daten nun in der klasse 'kunde' in instanz-variablen
+      ausgabeHash[kunden_name].summe += bezahl  #wir speichern unsere daten nun in der klasse 'kunde' in instanz-variablen
 
       @gesamtsum+= bezahl
 
     end
 
-
-    @report=ausgabeHash.drop(1)
-    #ausgabe(ausgabeHash.drop(1),@sum)
-    p ausgabeHash
-
+    @report = ausgabeHash.drop(1)
   end
 
 
-  def ausgabe(tabsigns)
+  def ausgabe(kundenreport, tabsigns, bezahltsigns)
 
-    printf "%-#{tabsigns}s %s\n","Kunde","Bezahlt\n"
+    printf "%-#{tabsigns}s %-#{bezahltsigns}s %-#{bezahltsigns}s %s\n","Kunde","Bezahlt", "Bezahlt", "Nicht Bezahlt\n"
       #p @report
 
-    @report.sort do |a, b|
-      a.last == b.last ? a.first <=> b.first :
-      b.last <=> a.last
-    end.each do |key, value|
+    # @report.sort do |a, b|
+    #   a.last == b.last ? a.first <=> b.first :
+    #   b.last <=> a.last
+    # end.each do |key, value|
 
-      printf("%-#{tabsigns}s %s\n",key, value)
+    #list = ["Albania", "anteater", "zorilla", "Zaire"]
+    #puts list.sort_by { |x| x.downcase }
+
+    #kundenreport.sort_by{ |kunde| kunde.to_s.downcase }
+
+    kundenreport.sort_by{ |kunde| kunde.to_s.downcase }.each do |_, kunde|
+      printf("%-#{tabsigns}s %-#{bezahltsigns}i %-#{bezahltsigns}i %i\n", kunde.name, kunde.summe, kunde.bezahlt, kunde.nichtbezahlt)
     end
 
     printf("\n")
-    printf("%-#{tabsigns}s %s\n","Gesamt Summe", @gesamtsum)
+    printf("%-#{tabsigns}s %i\n","Gesamt Summe", @gesamtsum)
     print"\n"
   end
 
 end
 
 
-report = Report.new()
-report.lade_CSV()
-report.generiere_bezahlReport(1,2)
-#report.ausgabe(40)
+report = Report.new
+file=report.lade_CSV("./usage-data-2016-11-15.csv")
+kundenreport =report.generiere_bezahlReport(file,1,2)
+report.ausgabe(kundenreport,40,10)
